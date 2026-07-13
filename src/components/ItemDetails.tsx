@@ -33,7 +33,7 @@ function formatSubtitleLabel(sub: Subtitle): string {
     deu: 'Deutsch',
     fra: 'Français',
   }
-  return langNames[sub.lang] || sub.lang.toUpperCase()
+  return langNames[sub.lang] || (sub.lang || '').toUpperCase()
 }
 
 export function ItemDetails({ countries, directors, actors, audios, subtitles }: ItemDetailsProps) {

@@ -24,8 +24,33 @@ const DEFAULT_SETTINGS: LocalSettings = {
   showContinueWatching: true
 }
 
+function readStorage(key: string): string | null {
+  try {
+    return localStorage.getItem(key)
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('localStorage read failed:', err)
+    return null
+  }
+}
+
+function writeStorage(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value)
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('localStorage write failed:', err)
+  }
+}
+
+function removeStorage(key: string): void {
+  try {
+    localStorage.removeItem(key)
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('localStorage remove failed:', err)
+  }
+}
+
 export function getLocalSettings(): LocalSettings {
-  const data = localStorage.getItem(SETTINGS_KEY)
+  const data = readStorage(SETTINGS_KEY)
   if (!data) return DEFAULT_SETTINGS
 
   try {
@@ -37,15 +62,15 @@ export function getLocalSettings(): LocalSettings {
 
 export function saveLocalSettings(settings: Partial<LocalSettings>): void {
   const current = getLocalSettings()
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...current, ...settings }))
+  writeStorage(SETTINGS_KEY, JSON.stringify({ ...current, ...settings }))
 }
 
 export function saveTokens(tokens: Tokens): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens))
+  writeStorage(STORAGE_KEY, JSON.stringify(tokens))
 }
 
 export function getTokens(): Tokens | null {
-  const data = localStorage.getItem(STORAGE_KEY)
+  const data = readStorage(STORAGE_KEY)
   if (!data) return null
 
   try {
@@ -56,7 +81,7 @@ export function getTokens(): Tokens | null {
 }
 
 export function clearTokens(): void {
-  localStorage.removeItem(STORAGE_KEY)
+  removeStorage(STORAGE_KEY)
 }
 
 export function isAuthenticated(): boolean {
@@ -74,11 +99,11 @@ export interface ReturnToState {
 }
 
 export function saveReturnTo(state: ReturnToState): void {
-  localStorage.setItem(RETURN_TO_KEY, JSON.stringify(state))
+  writeStorage(RETURN_TO_KEY, JSON.stringify(state))
 }
 
 export function getReturnTo(): ReturnToState | null {
-  const data = localStorage.getItem(RETURN_TO_KEY)
+  const data = readStorage(RETURN_TO_KEY)
   if (!data) return null
 
   try {
@@ -89,7 +114,7 @@ export function getReturnTo(): ReturnToState | null {
 }
 
 export function clearReturnTo(): void {
-  localStorage.removeItem(RETURN_TO_KEY)
+  removeStorage(RETURN_TO_KEY)
 }
 
 export interface CachedContentType {
@@ -105,7 +130,7 @@ export interface CachedContentTypes {
 const CONTENT_TYPES_TTL = 24 * 60 * 60 * 1000
 
 export function getContentTypesCache(): CachedContentType[] | null {
-  const data = localStorage.getItem(CONTENT_TYPES_KEY)
+  const data = readStorage(CONTENT_TYPES_KEY)
   if (!data) return null
 
   try {
@@ -124,5 +149,5 @@ export function saveContentTypesCache(types: CachedContentType[]): void {
     types,
     fetchedAt: Date.now()
   }
-  localStorage.setItem(CONTENT_TYPES_KEY, JSON.stringify(cached))
+  writeStorage(CONTENT_TYPES_KEY, JSON.stringify(cached))
 }

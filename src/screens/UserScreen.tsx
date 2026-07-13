@@ -47,6 +47,7 @@ export function UserScreen({ onNavigateToMenu, onLogout, isActive }: UserScreenP
   const formatSubscriptionDate = (timestamp: number): string => {
     if (!timestamp) return 'Unknown'
     const date = new Date(timestamp * 1000)
+    if (isNaN(date.getTime())) return 'Unknown'
     const locale = language === 'ru' ? 'ru-RU' : language === 'de' ? 'de-DE' : 'en-US'
     try {
       return date.toLocaleDateString(locale, {

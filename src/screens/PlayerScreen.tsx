@@ -186,7 +186,7 @@ export function PlayerScreen({ url, title, audios = [], subtitles = [], startTim
         onTimeUpdate(video.currentTime)
       }
     }
-    const handleDurationChange = () => setDuration(video.duration)
+    const handleDurationChange = () => setDuration(Number.isFinite(video.duration) ? video.duration : 0)
     const handleProgress = () => {
       if (video.buffered.length > 0) {
         setBuffered(video.buffered.end(video.buffered.length - 1))
@@ -339,7 +339,7 @@ export function PlayerScreen({ url, title, audios = [], subtitles = [], startTim
             kind="subtitles"
             src={sub.url}
             srcLang={sub.lang}
-            label={sub.lang.toUpperCase()}
+            label={(sub.lang || '').toUpperCase()}
           />
         ))}
       </video>
@@ -419,7 +419,7 @@ export function PlayerScreen({ url, title, audios = [], subtitles = [], startTim
                     key={sub.lang}
                     class={`player-panel-item ${idx === controls.selectedSubtitleIndex ? 'selected' : ''}`}
                   >
-                    {sub.lang.toUpperCase()}
+                    {(sub.lang || '').toUpperCase()}
                   </div>
                 ))}
               </div>
