@@ -48,11 +48,15 @@ export function UserScreen({ onNavigateToMenu, onLogout, isActive }: UserScreenP
     if (!timestamp) return 'Unknown'
     const date = new Date(timestamp * 1000)
     const locale = language === 'ru' ? 'ru-RU' : language === 'de' ? 'de-DE' : 'en-US'
-    return date.toLocaleDateString(locale, {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    })
+    try {
+      return date.toLocaleDateString(locale, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+    } catch {
+      return date.toISOString().split('T')[0]
+    }
   }
 
   if (loading) {

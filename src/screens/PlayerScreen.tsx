@@ -132,7 +132,9 @@ export function PlayerScreen({ url, title, audios = [], subtitles = [], startTim
     const video = videoRef.current
     if (!video) return
     if (video.paused) {
-      video.play()
+      video.play().catch(err => {
+        if (import.meta.env.DEV) console.error('play failed:', err)
+      })
     } else {
       video.pause()
     }
@@ -141,7 +143,9 @@ export function PlayerScreen({ url, title, audios = [], subtitles = [], startTim
   const seek = useCallback((delta: number) => {
     const video = videoRef.current
     if (!video) return
-    video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + delta))
+    if (Number.isFinite(video.duration) && Number.isFinite(video.currentTime)) {
+      video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + delta))
+    }
     showControls()
   }, [showControls])
 
@@ -189,10 +193,12 @@ export function PlayerScreen({ url, title, audios = [], subtitles = [], startTim
       }
     }
     const handleLoadedMetadata = () => {
-      if (startTime > 0) {
+      if (Number.isFinite(startTime) && startTime > 0) {
         video.currentTime = startTime
       }
-      video.play()
+      video.play().catch(err => {
+        if (import.meta.env.DEV) console.error('play failed:', err)
+      })
     }
 
     const handleError = () => {
